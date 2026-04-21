@@ -540,31 +540,42 @@ with st.sidebar:
     st.markdown("### ⚙️ DebugMate Settings")
     mode = st.radio("**Engine**", ["🔧 Rule-Based (Offline)", "🤖 AI Mode"])
     api_key = None
-    provider = "gemini"
-    if mode == "🤖 AI Mode":
-        ai_prov = st.selectbox("**AI Provider**", [
-            "🆓 Groq — Llama 3.3 (Best Free)",
-            "🆓 Gemini (Google Free)",
-            "💜 Claude (Anthropic)"
-        ])
-        if "Groq" in ai_prov:
-            provider = "groq"
-        elif "Gemini" in ai_prov:
-            provider = "gemini"
-        else:
-            provider = "claude"
+    provider = "groq"
 
-        if provider == "groq":
-            st.markdown('<div class="info-bar">🆓 Free · 14,400 req/day · No credit card · Fastest</div>', unsafe_allow_html=True)
-            api_key = st.text_input("Groq API Key", type="password", placeholder="gsk_...")
-            st.markdown('<a href="https://console.groq.com" target="_blank" style="font-size:0.78rem;color:#00d4ff;">→ Get free key at console.groq.com</a>', unsafe_allow_html=True)
-        elif provider == "gemini":
-            st.markdown('<div class="info-bar">🆓 Free · 1500 req/day · No credit card</div>', unsafe_allow_html=True)
-            api_key = st.text_input("Gemini API Key", type="password", placeholder="AIza...")
-            st.markdown('<a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size:0.78rem;color:#00d4ff;">→ Get free key at aistudio.google.com</a>', unsafe_allow_html=True)
+    # Auto-load secret key if deployed on Streamlit Cloud
+    secret_key = st.secrets.get("GROQ_API_KEY", None) if hasattr(st, "secrets") else None
+
+    if mode == "🤖 AI Mode":
+        if secret_key:
+            # Hosted mode — key is hidden, user sees nothing
+            api_key = secret_key
+            provider = "groq"
+            st.markdown('<div class="info-bar">✅ AI Mode ready — powered by Groq · Llama 3.3</div>', unsafe_allow_html=True)
         else:
-            api_key = st.text_input("Anthropic API Key", type="password", placeholder="sk-ant-...")
-            st.markdown('<a href="https://console.anthropic.com" target="_blank" style="font-size:0.78rem;color:#00d4ff;">→ console.anthropic.com</a>', unsafe_allow_html=True)
+            # Local mode — user enters their own key
+            ai_prov = st.selectbox("**AI Provider**", [
+                "🆓 Groq — Llama 3.3 (Best Free)",
+                "🆓 Gemini (Google Free)",
+                "💜 Claude (Anthropic)"
+            ])
+            if "Groq" in ai_prov:
+                provider = "groq"
+            elif "Gemini" in ai_prov:
+                provider = "gemini"
+            else:
+                provider = "claude"
+
+            if provider == "groq":
+                st.markdown('<div class="info-bar">🆓 Free · 14,400 req/day · No credit card</div>', unsafe_allow_html=True)
+                api_key = st.text_input("Groq API Key", type="password", placeholder="gsk_...")
+                st.markdown('<a href="https://console.groq.com" target="_blank" style="font-size:0.78rem;color:#00d4ff;">→ Get free key at console.groq.com</a>', unsafe_allow_html=True)
+            elif provider == "gemini":
+                st.markdown('<div class="info-bar">🆓 Free · 1500 req/day · No credit card</div>', unsafe_allow_html=True)
+                api_key = st.text_input("Gemini API Key", type="password", placeholder="AIza...")
+                st.markdown('<a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size:0.78rem;color:#00d4ff;">→ Get free key at aistudio.google.com</a>', unsafe_allow_html=True)
+            else:
+                api_key = st.text_input("Anthropic API Key", type="password", placeholder="sk-ant-...")
+                st.markdown('<a href="https://console.anthropic.com" target="_blank" style="font-size:0.78rem;color:#00d4ff;">→ console.anthropic.com</a>', unsafe_allow_html=True)
 
     st.markdown("---")
     st.markdown("### 🌐 Output Language")
