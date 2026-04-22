@@ -1001,3 +1001,5 @@ with tab4:
 # ── Footer ──
 st.markdown("---")
 st.markdown('<div style="text-align:center;color:var(--muted);font-size:0.78rem;font-family:var(--mono);">🛠 DebugMate · Error Translator + Code Debugger + Batch Scanner + PDF Export + Multilingual + Trend Dashboard</div>', unsafe_allow_html=True)
+
+
